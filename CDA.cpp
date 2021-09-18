@@ -295,6 +295,7 @@ public:
         }
     }
 
+    // Running insertion sort on TimSort Runs
     void insertionSort(CDA<elmtype> *array, int left, int right){
         for(int i = left + 1; i <= right; i++){
             elmtype temp = array->operator[](i);
@@ -307,6 +308,7 @@ public:
         }
     }
 
+    // Merging runs for TimSort
     void mergeRuns(CDA<elmtype> *array, int left, int mid, int right){
         int len1 = mid - left + 1;
         int len2 = right - mid;
@@ -346,47 +348,52 @@ public:
             j++;
         }
     }
-    int partition(CDA<elmtype> *array, int left, int right){
-        elmtype pivot = array->operator[](right);
-        int i = left - 1;
-        for(int j = left; j <= right - 1; j++){
-            if(array->operator[](j) <= pivot){
+
+    int partition(CDA<elmtype> *array, int low, int high){
+        elmtype pivot = array->operator[](high);
+        int i = (low - 1);
+    
+        for (int j = low; j <= high - 1; j++){
+            if (array->operator[](j) <= pivot) {
                 i++;
                 swap(array->operator[](i), array->operator[](j));
             }
         }
-        swap(array->operator[](i+1), array->operator[](right));
-        return i + 1;
+        swap(array->operator[](i+1), array->operator[](high));
+        return (i + 1);
     }
 
-    int gen_piv(CDA<elmtype> *array, int left, int right){
-        int random = left + rand() % (right - left);
-        swap(array->operator[](random), array->operator[](right));
-        return partition(array, left, right);
-    }
 
-    void quickSort(CDA<elmtype> *array, int left, int right){
-        if(left < right){
-            int pivot = gen_piv(array, left, right);
-            quickSort(array, left, pivot - 1);
-            quickSort(array, pivot + 1, right);
+    int partition_r(CDA<elmtype> *array, int low, int high){
+        srand(time(NULL));
+        int random = low;
+        // Check for div by zero
+        if(high != low){
+            random = low + rand() % (high - low);
         }
+        // Make random pivot high index/selected by partition function
+        swap(array->operator[](random), array->operator[](high));
+    
+        return partition(array, low, high);
+}
+
+
+    elmtype kthSmallest(CDA<elmtype> *array, int l, int r, int k){
+        if (k > 0 && k <= r - l + 1) {
+            int index = partition_r(array, l, r);
+            if (index - l == k - 1)
+                return array->operator[](index);
+            if (index - l > k - 1)
+                return kthSmallest(array, l, index - 1, k);
+            return kthSmallest(array, index + 1, r,
+                                k - index + l - 1);
+        }
+        return init_val;
     }
 
     // Quickselect kth smallest element
     elmtype Select(int k){
-        quickSort(this, 0, size-1);
-        int ctr = 1;
-        int i = 1;
-        elmtype curr = this->operator[](0);
-        while(ctr < k && i < size){
-            if(this->operator[](i) != curr){
-                curr = this->operator[](i);
-                ctr++;
-            }
-            i++;
-        }
-        return curr;
+        return kthSmallest(this, 0, size-1, k);
     }
 
     // Sorts in O(nlog(n)) Using TimSort
