@@ -173,6 +173,9 @@ public:
             new_to[top] = ctr;
             top++;
             ctr++;
+            if(i == rear_idx){
+                break;
+            }
         }
         new_array[ctr] = array[rear_idx];
         new_from[ctr] = top;

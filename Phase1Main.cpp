@@ -1,79 +1,203 @@
 #include <iostream>
+#include <fstream>
 using namespace std;
 #include "CDA.cpp"
 
+void test1(ostream &fp);
+void test2(ostream &fp);
+void test3(ostream &fp);
+void test4(ostream &fp);
+void test5(ostream &fp);
+void test6(ostream &fp);
+
 void foo(CDA<int> x) {
-	for (int i=0; i<x.Length()/2; i++)
+	for (int i=0; i<x.Length()/2; i++){
+		int temp = x[i];
 		x[i] = x[x.Length()/2+i];
-	// X => "6 7 8 9 10 15 19 6 7 8 9 10 15 19 11"	
-	for (int i=0; i< x.Length();i++) cout << x[i] << " ";  cout << endl;
-}
-
-int main(){
-	CDA<float> C(10);
-	for (int i=0; i< C.Length();i++) C[i] = i;
-	for (int i=0; i< C.Length();i++) cout << C[i] << " ";  cout << endl;
-	// C => "0 1 2 3 4 5 6 7 8 9"
-	C.DelFront();
-	for (int i=0; i< C.Length();i++) cout << C[i] << " ";  cout << endl;
-	// C => "1 2 3 4 5 6 7 8 9"
-	C.DelEnd();
-	for (int i=0; i< C.Length();i++) cout << C[i] << " ";  cout << endl;
-	// C => "1 2 3 4 5 6 7 8"
-	C.AddEnd(100.0);
-	for (int i=0; i< C.Length();i++) cout << C[i] << " ";  cout << endl;
-	// C => "1 2 3 4 5 6 7 8 100"
-	C.AddEnd(101.0);	
-	for (int i=0; i< C.Length();i++) cout << C[i] << " ";  cout << endl;
-	// C => "1 2 3 4 5 6 7 8 100 101"
-	C.DelEnd(); C.DelFront();
-	C.AddFront(-100.0); C.AddFront(-200.0);
-	for (int i=0; i< C.Length();i++) cout << C[i] << " ";  cout << endl;
-	// C => "-200 -100 2 3 4 5 6 7 8 100"
-
-	CDA<int> A,B;
-	for(int i=0; i<10;i++) A.AddEnd(i);
-	B = A;   //Testing the copy assignment operator
-	A.AddEnd(15); A.AddEnd(19);
-	// A => "0 1 2 3 4 5 6 7 8 9 15 19" 
-	cout << "Search is " << A.Search(5) << endl;
-	// A => "0 1 2 3 4 5 6 7 8 9 15 19" Search => 5
-	cout << "BinSearch is " << A.BinSearch(12) << endl;
-	// A => "0 1 2 3 4 5 6 7 8 9 15 19" BinSearch => -11
-	cout << "Select is " << A.Select(3) << endl;
-	// A => "0 1 2 3 4 5 6 7 8 9 15 19" Select => 2
-	A.Sort();
-	A.AddFront(10); 
-	// A => "10 0 1 2 3 4 5 6 7 8 9 15 19"
-	cout << "Search is " << A.Search(5) << endl;
-	// A => "10 0 1 2 3 4 5 6 7 8 9 15 19" Search => 6
-	cout << "Select is " << A.Select(3) << endl;
-	// A => "10 0 1 2 3 4 5 6 7 8 9 15 19" Select => 2
-	A.Sort();
-	// A => "0 1 2 3 4 5 6 7 8 9 10 15 19"
-	A.AddEnd(11); A.AddFront(1); A.AddFront(2); A.AddFront(3);
-	cout << "Capacity is " << A.Capacity() << endl;
-	// A => "3 2 1 0 1 2 3 4 5 6 7 8 9 10 15 19 11"	  Capacity => 32
-	A.DelFront(); A.DelFront();
-	// A => "1 0 1 2 3 4 5 6 7 8 9 10 15 19 11"	  Capacity => 32
-	for (int i=0; i< A.Length();i++) cout << A[i] << " ";  cout << endl;
-
-	foo(A);  //Testing the copy constructor;
-
-	for (int i=0; i< A.Length();i++) cout << A[i] << " ";  cout << endl;
-	// A => "1 0 1 2 3 4 5 6 7 8 9 10 15 19 11"	  Capacity => 32
-
-	for (int i=0; i< B.Length();i++) cout << B[i] << " ";  cout << endl;
-	// B => "0 1 2 3 4 5 6 7 8 9"
-	
-	for(int i=1; i<200; i++) {
-		CDA<double> D(100000,-1.0);
-		for(int j=1; j<100; j++)
-			D[i*j] = i*j;
-		for(int j=50*i; j<51*i; j++)
-			if(D[j] != -1.0) cout << "D["<<j<<"] is : "<<D[j] << endl;  //should output where D[j] is : j once per value of i
+		x[x.Length()/2+i] = temp;
 	}
-	CDA<char> E(10,'X');
-	E[5] = 'A';
-	cout << E.Select(1) << endl;   //should output A
 }
+
+int printWrapper = 0;
+
+int main(int argc, char **argv){
+	int testToRun = atoi(argv[1]);
+	switch (testToRun){
+		case 1:
+			test1(cout);
+			break;
+		case 2:
+			test2(cout);
+			break;
+		case 3:
+			test3(cout);
+			break;
+		case 4:
+			test4(cout);
+			break;
+		case 5:
+			test5(cout);
+			break;
+		case 6:
+			test6(cout);
+			break;
+	}
+}
+
+void test1(ostream &fp){
+	if(printWrapper) fp << "Running test 1" << endl;
+	//fp.open("test1.out");
+	CDA<int> C(20);
+	for (int i=0; i< C.Length();i++) C[i] = i*10;
+	for (int i=0; i< C.Length();i++) fp << C[i] << " "; fp << endl;
+	C.DelFront();
+	for (int i=0; i< C.Length();i++) fp << C[i] << " ";  fp << endl;
+	C.DelEnd();
+	for (int i=0; i< C.Length();i++) fp << C[i] << " ";  fp << endl;
+	C.AddEnd(1000);
+	for (int i=0; i< C.Length();i++) fp << C[i] << " ";  fp << endl;
+	C.AddEnd(1001);
+	for (int i=0; i< C.Length();i++) fp << C[i] << " ";  fp << endl;
+	C.DelEnd(); C.DelEnd();
+	C.AddFront(-100); C.AddFront(-200);
+	for (int i=0; i< C.Length();i++) fp << C[i] << " ";  fp << endl;
+	fp << "Capacity is " << C.Capacity() << endl;
+
+	CDA<int> A;
+	int temp = 0;
+	for(int i=0; i<20;i++){
+		A.AddEnd(i*10);
+		if(A.Capacity() != temp){
+			temp = A.Capacity();
+			fp << "Capacity is " << temp << " ";
+		}
+	}
+    fp << endl;
+	fp << "Capacity is " << A.Capacity() << endl;
+	fp << "Search is " << A.Search(50) << endl;
+	fp << "Select is " << A.Select(3) << endl;
+	A.Sort();
+	A.AddFront(11); 
+	fp << "Search is " << A.Search(50) << endl;
+	fp << "Select is " << A.Select(3) << endl;
+	A.AddFront(-10);
+	A.Sort();
+	fp << "BinSearch is " << A.BinSearch(20) << endl;
+	A.DelFront(); A.DelFront(); A.AddEnd(51);
+	for (int i=0; i< A.Length();i++) fp << A[i] << " ";  fp << endl;
+	CDA<int> B;
+	B = A;
+	A[0] = -1000;
+	fp << B[0] << endl;
+	foo(A);
+	for (int i=0; i< B.Length();i++) fp << B[i] << " ";  fp << endl;
+	CDA<long int> testGeneric1(10);
+	CDA<short int> testGeneric2(10);
+	CDA<double> testGeneric3(10);
+	fp << "Passed Generics Test" << endl;
+	//fp.close();
+	if(printWrapper)fp << "-----------------Finished Test----------------------" << endl;
+}
+
+void test2(ostream &fp){
+	if(printWrapper) fp << "Running test 2" << endl;   //testing O(nlgn) sort
+	CDA<int> A;
+	for(int i = 0; i < 500000; i++) A.AddFront(i);
+	fp << "Select is " << A.Select(300) << endl;
+	fp << "Select is " << A.Select(3000) << endl;
+	fp << "Select is " << A.Select(30000) << endl;
+	A.Sort();
+	fp << "Search is " << A.Search(300) << endl;
+	fp << "Search is " << A.Search(3000) << endl;
+	fp << "Search is " << A.Search(30000) << endl;
+	fp << "Select is " << A.Select(3000) << endl;
+	if(printWrapper) fp << "-----------------Finished Test----------------------" << endl;
+}
+
+void test3(ostream &fp){
+	if(printWrapper) fp << "Running test 3" << endl;   //testing initialization constructor
+	int initCounter = 0;
+	for(int i=1; i<200; i++) {
+		CDA<long double> D(500000,-10.0);
+		for(int j=1; j<1000; j++) D[i*j] = i*j;
+		for(int j=50*i; j<51*i; j++) 
+			if(D[j] != -10.0 && i % 39 == 0){
+				cout << "D["<<j<<"] is : "<<D[j] << endl;  //should output where D[j] is : j once per value of i
+				initCounter++;
+			} 
+	}
+	int printNumber = 0;
+	if(initCounter < 6) printNumber = 5;
+	else if(initCounter < 30) printNumber = 4;
+	else if(initCounter < 60) printNumber = 3;
+	else if(initCounter < 100) printNumber = 2;
+	else if(initCounter < 200) printNumber = 1;
+	else if(initCounter < 300) printNumber = 0;
+	for(int i =0; i < printNumber; i++) cout << "This print counts as a line" << endl;
+	CDA<char> E(1000000,'X');
+	E[490000] = 'A';
+	E[500000] = 'B';
+	cout << E.Search('B')<< endl;   //should output 500000
+	if(printWrapper) fp << "-----------------Finished Test----------------------" << endl;
+}
+
+void test4(ostream &fp){
+	if(printWrapper) fp << "Running test 4" << endl;
+	CDA<int> A;
+	for(int i = 0; i < 50000; i++) {A.AddFront(i);A.AddEnd(100000-i);}
+	fp << "A[24999] is " << A[24999] << endl;
+	fp << "A[25000] is " << A[25000] << endl;	
+	for(int i = 0; i < 25000; i++) {A.DelFront();A.DelEnd();}	
+	fp << "A[12499] is " << A[12499] << endl;
+	fp << "A[12500] is " << A[12500] << endl;
+	fp << "Search is " << A.Search(300) << endl;
+	fp << "Select is " << A.Select(3000) << endl;
+	A.Sort();
+	fp << "BinSearch is " << A.BinSearch(3000) << endl;
+	fp << "BinSearch is " << A.BinSearch(50000) << endl;	  //looking for a value not in the array	
+	if(printWrapper) fp << "-----------------Finished Test----------------------" << endl;
+}
+
+
+void test5(ostream &fp){
+	if(printWrapper) fp << "Running test 5" << endl;	
+	CDA<int> A;
+	for(int i = 0; i < 1000000; i++) 
+	{
+		A.AddEnd(i);
+	}
+	for(int i = 0; i < 20000; i++) 
+	{
+		int value = A.BinSearch(i);
+		if(i % 3000 == 0) fp << "BinSearch at " << i << " is " << value << endl;
+	}
+	if(printWrapper) fp << "-----------------Finished Test----------------------" << endl;
+}
+
+
+void test6(ostream &fp){
+	if(printWrapper) fp << "Running test 6" << endl;
+	CDA<int> A;
+	for(int i = 0; i < 500000; i++) 
+	{
+		A.AddFront(i);
+	}
+	for(int i = 0; i < 50; i++) 
+	{
+		int value = A.Search(i);
+		if(i % 10 == 0) fp << "Search at " << i << " is " << value << endl;
+	}
+	for(int i = 1; i < 5; i++) 
+	{
+		int value = A.Select(i);
+		fp << "Select at " << i << " is " << value << endl;
+	}
+	for(int i = 49900; i < 49905; i++) 
+	{
+		int value = A.Select(i);
+		fp << "Select at " << i << " is " << value << endl;
+	}
+	if(printWrapper) fp << "-----------------Finished Test----------------------" << endl;
+}
+
+
