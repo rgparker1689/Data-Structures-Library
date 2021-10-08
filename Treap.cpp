@@ -204,6 +204,88 @@ class Treap
         }
 
         int remove(keytype k){
+            TreapNode<keytype>* ptr = root;
+            if(ptr == nullptr){
+                return 0;
+            }
+            //Returned if empty tree
+
+            while(true){
+                if(ptr->key == k){
+                    break;
+                }
+                else if(ptr->key < k){
+                    if(ptr->right != nullptr){
+                        ptr = ptr->right;
+                    } else {
+                        return 0;
+                    }
+                }
+                else if(ptr->key > k){
+                    if(ptr->left != nullptr){
+                        ptr = ptr->left;
+                    } else {
+                        return 0;
+                    }
+                }
+            }
+            // Pointer has reached relevant node or returned 0
+
+            if(ptr->left == nullptr && ptr->right == nullptr){
+                if(ptr->parent->right == ptr){
+                    ptr->parent->right = nullptr;
+                }
+                else if(ptr->parent->left == ptr){
+                    ptr->parent->left = nullptr;
+                }
+                delete ptr;
+                return 1;
+                // Node is already a leaf and is deleted
+            }
+
+            if(ptr->left == nullptr && ptr->right != nullptr){
+                if(ptr->parent->right == ptr){
+                    ptr->parent->right = ptr->right;
+                    ptr->right->parent = ptr->parent;
+                } else if(ptr->parent->left == ptr){
+                    ptr->parent->left = ptr->right;
+                    ptr->right->parent = ptr->parent;
+                }
+                delete ptr;
+                return 1;
+                // has only right child
+            }
+
+            else if(ptr->right == nullptr && ptr->left != nullptr){
+                if(ptr->parent->right == ptr){
+                    ptr->parent->right = ptr->left;
+                    ptr->left->parent = ptr->parent;
+                } else if(ptr->parent->left == ptr){
+                    ptr->parent->left = ptr->left;
+                    ptr->left->parent = ptr->parent;
+                }
+                delete  ptr;
+                // has only left child
+                return 1;
+            }
+
+            else{
+                TreapNode<keytype>* pred_finder = ptr->left;
+                while(pred_finder->right != nullptr){
+                    pred_finder = pred_finder->right;
+                }
+                ptr->key = pred_finder->key;
+                ptr->priority = pred_finder->priority;
+                if(pred_finder->parent->right == nullptr){
+                    pred_finder->parent->right = nullptr;
+                } else {
+                    pred_finder->parent->left = nullptr;
+                }
+                delete pred_finder;
+                checkViolation(ptr);
+                return 1;
+            }
+            return 0;
         }
 
         int rank(keytype k){
@@ -297,10 +379,11 @@ class Treap
 };
 
 int main(int argc, char **argv){
-    int keys[5] = {3, 1, 3, 5, 2};
-    float pris[5] = {.1, .1, .4, .6, .8};
-    Treap<int> treap(keys, pris, 5);
+    int keys[5] = {3, 2, 1};
+    float pris[5] = {.1, .1, .8};
+    Treap<int> treap(keys, pris, 3);
     treap.inorder();
     treap.preorder();
-    cout<<treap.check_priority()<<endl;
+    cout<<treap.remove(2)<<endl;
+    treap.preorder();
 }
