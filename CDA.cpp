@@ -4,7 +4,7 @@ using namespace std;
 const int RUN = 32;
 
 template <typename elmtype>
-class CDA
+class CDA   
 {
 private:
 
@@ -381,11 +381,11 @@ public:
 }
 
 
-    elmtype kthSmallest(CDA<elmtype> *array, int l, int r, int k){
+    elmtype kthSmallest(CDA<elmtype> *array, int     l, int r, int k){
         if (k > 0 && k <= r - l + 1) {
             int index = partition_r(array, l, r);
             if (index - l == k - 1)
-                return array->operator[](index);
+                return array->operator[](index);    
             if (index - l > k - 1)
                 return kthSmallest(array, l, index - 1, k);
             return kthSmallest(array, index + 1, r,
@@ -416,7 +416,7 @@ public:
         }
     }
 
-    // Linear search of unsorted array, returning idx or -1
+    // Linear search of unsorted array, returning ..idx or -1
     int Search(elmtype e){
         for(int i = 0; i < size; i++){
             if(this->operator[](i) == e){
