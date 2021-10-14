@@ -11,17 +11,18 @@ class TreapNode
         TreapNode* left;
         TreapNode* right;
         TreapNode* parent;
-        int num_below;
+        int left_size;
+        int right_size;
         
         TreapNode(keytype k, float p){
-            num_below = 0;
+            left_size = right_size = 0;
             key = k;
             priority = p;
             left = right = parent = nullptr;
         }       
 
         TreapNode(keytype k){
-            num_below = 0;
+            left_size = right_size = 0;
             key = k;
             priority = (float)(rand() % 100) / 100;
             left = right = parent = nullptr;
@@ -35,7 +36,6 @@ class Treap
     private:
         TreapNode<keytype>* root;
         int num_nodes;
-        int in_order[];
 
     public:
 
@@ -58,6 +58,7 @@ class Treap
         //Recursive Copy-Building Function
         TreapNode<keytype>* RecurCopy(TreapNode<keytype>* node){
             TreapNode<keytype>* new_node = new TreapNode<keytype>(node->key, node->priority);
+            new_node->left_size = node->left_size;
             // TreapNode<keytype> new_node(node->key, node->priority);
             if(node->left != nullptr){
                 new_node->left = RecurCopy(node->left);
@@ -108,6 +109,35 @@ class Treap
             }
         }
 
+        int rank(keytype k){
+            TreapNode<keytype>* ptr = root;
+            if(ptr == nullptr){
+                return -1;
+            }
+            int cur_rank = 1+root->left_size;
+            while(true){
+                if(ptr->key < k){
+                    if(ptr->right == nullptr){
+                        return -1;
+                    } else {
+                        ptr = ptr->right;
+                        cur_rank += (1 + ptr->left_size);
+                    }
+                } else if(ptr->key > k){
+                    if(ptr->left == nullptr){
+                        return -1;
+                    } else {
+                        ptr = ptr->left;
+                        cur_rank -= (1 + ptr->right_size);
+                    }
+                } else{
+                    return cur_rank;
+                }
+            }
+            cout<<"last";
+            return -1;
+        }
+
         float search(keytype k){
             TreapNode<keytype>* ptr = root;
             while(true){
@@ -141,6 +171,8 @@ class Treap
                 l->parent->right = l;
             }
             //Adjusted l's parent relationship
+            root->left_size = l->right_size;
+            l->right_size = root->right_size + root->left_size + 1;
             root->left = lr;
             if(lr != nullptr){
                 lr->parent = root;
@@ -161,6 +193,8 @@ class Treap
             }
             //Adjusted r's parent relationship
             root->right = rl;
+            root->right_size = r->left_size;
+            r->left_size = root->left_size + root->right_size + 1;
             if(rl != nullptr){
                 rl->parent = root;
             }
@@ -201,18 +235,22 @@ class Treap
             while(true){
                 if(k < ptr->key){
                     if(ptr->left != nullptr){
+                        ptr->left_size++;
                         ptr = ptr->left;
                     } else {
                         ptr->left = new TreapNode<keytype>(k,p);
                         ptr->left->parent = ptr;
+                        ptr->left_size++;
                         checkViolation(ptr);
                         return;
                     }
                 } else {
                     if(ptr->right != nullptr){
+                        ptr->right_size++;
                         ptr = ptr->right;
                     } else {
                         ptr->right = new TreapNode<keytype>(k,p);
+                        ptr->right_size++;
                         ptr->right->parent = ptr;
                         checkViolation(ptr);
                         return;
@@ -303,6 +341,18 @@ class Treap
                     ptr->parent->left = ptr->right;
                     ptr->right->parent = ptr->parent;
                 }
+                TreapNode<keytype>* rev_ptr = ptr;
+                while(true){
+                    if(rev_ptr->parent == nullptr){
+                        break;
+                    }
+                    if(rev_ptr->parent->key <= rev_ptr->key){
+                        rev_ptr->parent->right_size--;
+                    } else{
+                        rev_ptr->parent->left_size--;
+                    }
+                    rev_ptr = rev_ptr->parent;
+                }
                 delete ptr;
                 return 1;
                 // has only right child
@@ -316,11 +366,24 @@ class Treap
                     ptr->parent->left = ptr->left;
                     ptr->left->parent = ptr->parent;
                 }
+                TreapNode<keytype>* rev_ptr = ptr;
+                while(true){
+                    if(rev_ptr->parent == nullptr){
+                        break;
+                    }
+                    if(rev_ptr->parent->key <= rev_ptr->key){
+                        rev_ptr->parent->right_size--;
+                    } else{
+                        rev_ptr->parent->left_size--;
+                    }
+                    rev_ptr = rev_ptr->parent;
+                }
                 delete  ptr;
                 // has only left child
                 return 1;
             }
 
+        //FIX THIS CASE:
             else{ // Has two children, decide new parent
                 TreapNode<keytype>* pred_finder = ptr->left;
                 bool is_right = false;
@@ -332,20 +395,65 @@ class Treap
                 ptr->priority = pred_finder->priority;
                 if(is_right){
                     pred_finder->parent->right = pred_finder->left;
+                    if(pred_finder->left != nullptr){
+                        pred_finder->left->parent = pred_finder->parent;
+                    }
                 }
                 else{
                     pred_finder->parent->left = pred_finder->left;
+                    if(pred_finder->left != nullptr){
+                        pred_finder->left->parent = pred_finder->parent;
+                    }
+                }
+                TreapNode<keytype>* rev_ptr = pred_finder;
+                while(true){
+                    if(rev_ptr->parent == nullptr){
+                        break;
+                    }
+                    if(rev_ptr->parent->key <= rev_ptr->key){
+                        rev_ptr->parent->right_size--;
+                    } else{
+                        rev_ptr->parent->left_size--;
+                    }
+                    rev_ptr = rev_ptr->parent;
                 }
                 checkViolation(ptr);
+                delete pred_finder;
                 return 1;
             }
             return 0;
         }
 
-        int rank(keytype k){
-        }
-
         keytype select(int pos){
+            keytype dummy;
+            if(pos > num_nodes){
+                cout<<"invalid input"<<endl;
+            }
+            TreapNode<keytype>* ptr = root;
+            if(ptr == nullptr){
+                return dummy;
+            }
+            int cur_rank = 1+root->left_size;
+            while(true){
+                if(cur_rank < pos){
+                    if(ptr->right == nullptr){
+                        return dummy;
+                    } else {
+                        ptr = ptr->right;
+                        cur_rank += (1 + ptr->left_size);
+                    }
+                } else if(cur_rank > pos){
+                    if(ptr->left == nullptr){
+                        return dummy;
+                    } else {
+                        ptr = ptr->left;
+                        cur_rank -= (1 + ptr->right_size);
+                    }
+                } else{
+                    return ptr->key;
+                }
+            }
+            return dummy;
         }
 
         keytype predecessor(keytype k){
@@ -442,6 +550,7 @@ class Treap
 
         void preorder_helper(TreapNode<keytype>* root){
             cout<<root->key<<" ";
+            // cout<<root->key<<" "<<root->left_size<<" "<<root->right_size<<" "<<rank(root->key)<<" "<<select(rank(root->key))<<" ";
             if(root->left != nullptr){
                 preorder_helper(root->left);
             }
@@ -510,26 +619,10 @@ class Treap
 };
 
 // int main(){
-//     Treap<char> treap;
-//     for(int i = 11; i >= 0; i--){
-//         treap.insert(char(i+97), .1);
-//     }
+//     string K[10] = {"A","B","C","D","E","G","I","K","L","M"};
+//     float P[10] = {0.2,0.95,0.7,0.4,0.5,0.3,0.8,0.1,0.9,0.6};
+//     Treap<string> treap(K, P, 10);
+//     treap.insert("G", 0.99);
 //     treap.inorder();
 //     treap.preorder();
-
-//     cout<<"copying"<<endl;
-//     Treap<char>treap2(treap);
-//     treap2.inorder();
-//     treap2.preorder();
-
-//     cout<<treap.remove('3')<<endl;
-//     cout<<treap.remove('c')<<endl;
-//     treap.inorder();
-
-//     cout<<treap2.remove('d')<<endl;
-//     cout<<treap2.remove('1')<<endl;
-//     treap2.inorder();
-
-//     Treap<char> treap3 = treap;
-//     treap3.inorder();
 // }

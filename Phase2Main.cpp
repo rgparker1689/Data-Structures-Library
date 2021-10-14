@@ -16,11 +16,11 @@ int main(){
 	cout << T2.search("C") << endl;
 	// Should output 0.7
 	
-	// cout << T1.rank("C") << endl;
-	// //Should output 3
+	cout << T1.rank("C") << endl;
+	//Should output 3
 	
-	// cout << T1.select(3) << endl;
-	// //Should output C 
+	cout << T1.select(3) << endl;
+	//Should output C 
 	
 	T2.preorder();
 	//Should output "H A F D C B E G K I\n"
@@ -44,8 +44,8 @@ int main(){
 	cout << T2.remove("J") << endl;
 	//Should output 0
 	
-	// cout <<T2.rank("G") << endl;
-	// //Should output 6
+	cout <<T2.rank("G") << endl;
+	//Should output 6
 	
 	cout <<T1.successor("E")<<endl;
 	//Should output F
@@ -60,12 +60,13 @@ int main(){
 	cout <<T1.successor("E")<<endl;
 	//Should output F
 
-    // Treap<int> X;
-	// for (int i=1;i<1001000;i++) X.insert(i,rand()/(1.0 * RAND_MAX));
-	// for (int i=1;i<1001000;i++) {
-	// 	if(X.rank(i) != i) cout << "Rank error" << endl;
-	// 	if(X.select(i) != i) cout << "Select error" << endl;
-	// }  
-	// //Should be no output and should take seconds, not minutes
-	// return 0;
+    Treap<int> X;
+	for (int i=1;i<1001000;i++) X.insert(i,rand()/(1.0 * RAND_MAX));
+	for (int i=1;i<1001000;i++) {
+		if(X.rank(i) != i) cout << "Rank error" << endl;
+		if(X.select(i) != i) cout << "Select error" << endl;
+	}
+	cout<<"Finished quickly"<<endl; 
+	//Should be no output and should take seconds, not minutes
+	return 0;
 }
