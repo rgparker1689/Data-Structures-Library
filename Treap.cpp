@@ -207,6 +207,9 @@ class Treap
             if(root->left != nullptr && (root->left->priority < root->priority || (root->left->priority == root->priority && root->left->key < root->key))){
                 // cout<<"Right rotating..."<<endl;
                 root = rightRotate(root);
+                // cout<<"checking again for parent: "<<root->right->key<<endl;
+                checkViolation(root->right);
+                // cout<<"passed!"<<endl;
                 if(root->parent != nullptr){
                     checkViolation(root->parent);
                 } else {
@@ -215,6 +218,9 @@ class Treap
             } else if(root->right != nullptr && (root->right->priority < root->priority || (root->right->priority == root->priority && root->right->key < root->key))){
                 // cout<<"Left rotating..."<<endl;
                 root = leftRotate(root);
+                // cout<<"checking again for parent: "<<root->left->key<<endl;
+                checkViolation(root->left);
+                // cout<<"passed!"<<endl;
                 if(root->parent != nullptr){
                     checkViolation(root->parent);
                 } else {
@@ -559,7 +565,10 @@ class Treap
                 preorder_helper(root->right);
             }
         }
-
+        void pri_inorder(){
+            pri_inorder_helper(root);
+            cout<<endl;
+        }
         void inorder(){
             inorder_helper(root);
             cout<<endl;
@@ -574,6 +583,17 @@ class Treap
                 inorder_helper(root->right);
             }
         }
+
+        void pri_inorder_helper(TreapNode<keytype>* root){
+            if(root->left != nullptr){
+                pri_inorder_helper(root->left);
+            }
+            cout<<root->priority<<" ";
+            if(root->right != nullptr){
+                pri_inorder_helper(root->right);
+            }
+        }
+
         void postorder(){
             postorder_helper(root);
             cout<<endl;
@@ -619,10 +639,18 @@ class Treap
 };
 
 // int main(){
-//     string K[10] = {"A","B","C","D","E","G","I","K","L","M"};
-//     float P[10] = {0.2,0.95,0.7,0.4,0.5,0.3,0.8,0.1,0.9,0.6};
-//     Treap<string> treap(K, P, 10);
-//     treap.insert("G", 0.99);
+//     Treap<char> treap;
+//     for(int i = 0; i < 26; i++){
+//         treap.insert(char(i+97));
+//     }
 //     treap.inorder();
-//     treap.preorder();
+//     cout<<treap.check_priority()<<endl<<endl;
+    
+//     for(int i = 8; i < 17; i++){
+//         cout<<"removing: "<<char(i+97)<<endl;
+//         treap.remove(char(i+97));
+//         treap.inorder();
+//         cout<<"checking priority: "<<treap.check_priority()<<endl;
+//         cout<<endl;
+//     }
 // }
