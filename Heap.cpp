@@ -7,7 +7,7 @@ template <typename keytype>
 class Heap
 {
     private:
-        CDA<keytype> data;
+        CDA<keytype> heap;
         keytype left(keytype parent);
         keytype right(keytype parent);
         int size;
@@ -42,23 +42,39 @@ class Heap
 
         // Destructor
         ~Heap(){
-            delete data;
+            delete heap;
         }
 
         // Return min without modifying
         keytype peekKey(){
+            if (heap.Length() == 0){
+                return;
+            }
+            return heap[0];
         }
 
         // Remove min and return it
         keytype extractMin(){
+            keytype cur_min = this.peekKey();
+            if (heap.Length() == 0){
+                return;
+            }
+
+            heap[0] = heap[heap.Length() - 1];
+            heap.DelEnd();
+            heapify_down(0);
+            return cur_min;
         }
 
         // Insert key into heap
         void insert(keytype k){
+            heap.AddEnd(k);
+            heapify_up(heap.Length() - 1);
         }
 
         // Print keys in array starting at root
         void printKey(){
+            heap.PrintArray();
         }
 
         int size(){
