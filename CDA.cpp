@@ -135,7 +135,7 @@ public:
     // [] operator
     elmtype& operator[](int idx){
         if(idx < 0 || idx > size - 1){
-            cout<<"Out of bounds. "<<endl;
+            cout<<"Out of bounds. "<<idx<<endl;
             return init_val;
         }
         size_t true_idx = (front_idx + idx) % capacity;
