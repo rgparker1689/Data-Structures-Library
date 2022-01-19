@@ -4,3 +4,6 @@
  
 ## Treap
  A templated implementation of a combined binary tree and heap (a treap) featuring rank, successor/predecessor, and traversal functionality.
+
+## Fibonacci Heap
+ A templated implementation of a fibonacci heap featuring insertion, min-extraction and merging.
